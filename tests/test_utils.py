@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 import sys
 import os
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'scripts'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 from generate_sharepoint_links import generate_single_employee_link
 
 class TestGenerateLinks(unittest.TestCase):

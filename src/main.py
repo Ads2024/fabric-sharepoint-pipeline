@@ -7,7 +7,7 @@ import pytz
 from datetime import datetime
 from typing import Dict, List
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", 'scripts'))
+
 
 from query_fabric_lakehouse import get_areas_list, get_specialised_carers_list, get_salesforce_data
 from generate_powerbi_pdfs import (
