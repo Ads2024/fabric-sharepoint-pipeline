@@ -1,0 +1,62 @@
+#This is a template config file for the fabric-pdf-generator
+#You can use this as a starting point for your own config file
+#You can find more information about the config file in the README.md file
+
+timezone: "Australia/Sydney"
+
+sharepoint:
+  folders:
+    areas: "Areas"
+    employees: "Employees"
+    logs: "Logs"
+
+
+powerbi:
+  areas:
+    parameter_name: "Area"
+    export_format: "PDF"
+  employees:
+    parameter_name: "Employee"
+    export_format: "PDF"  
+
+  export:
+    max_retries: 30
+    retry_interval_seconds: 10
+    timeout_seconds: 300
+
+
+queries:
+  areas: |
+    SELECT AreaID, AreaName FROM Areas                
+  employees: |
+    SELECT EmployeeID, EmployeeName FROM Employees
+
+
+processing:
+  batch_size_areas: 30
+  batch_size_employees: 30
+  max_workers: 30
+  max_retries: 3
+  retry_failed: true
+  retry_delay_seconds: 5
+  link_generation_batch_size: 15
+
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  date_format: "%Y-%m-%d %H:%M:%S"
+
+
+email:
+  subject_template: "BCP - PowerBI Export - {{}}"
+  success_emoji: "✅"
+  failure_emoji: "❌"
+
+link_generation:
+  link_type: "view"
+  link_scope: "organization"
+  csv_filename: "links.csv"
+  log_filename_template: "link_generation_{timestamp}.txt"
+  csv_filename_template: "links_{timestamp}.csv"
+  log_sharepoint_filename_template: "logs_sharepoint_{timestamp}.txt"
+
