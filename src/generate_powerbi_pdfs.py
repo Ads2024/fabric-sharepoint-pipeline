@@ -147,7 +147,7 @@ def generate_pdf_batch(values: list, workspace_id: str, report_id: str, paramete
 
         retry_batch_size = min(1, batch_size // 2)
 
-        with ThreadPoolExecutor(max_retries=retry_batch_size) as executor:
+        with ThreadPoolExecutor(max_workers=retry_batch_size) as executor:
             retry_futures = {}
 
             for value in failed_items:
