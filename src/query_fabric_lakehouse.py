@@ -8,11 +8,11 @@ from azure.identity import ClientSecretCredential
 logger = logging.getLogger(__name__)
 
 
-def get_fabric_connection(tennat_id: str, client_id: str, client_secret: str, sql_endpoint: str, database: str):
+def get_fabric_connection(tenant_id: str, client_id: str, client_secret: str, sql_endpoint: str, database: str):
     try:
         logger.info(f"Authenticating with Azure AD for SQL endpoint: {sql_endpoint}")
         credential = ClientSecretCredential(
-            tenant_id=tennat_id,
+            tenant_id=tenant_id,
             client_id=client_id,
             client_secret=client_secret
         )

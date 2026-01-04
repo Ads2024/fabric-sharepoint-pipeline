@@ -198,7 +198,7 @@ def upload_csv_to_sharepoint(csv_content: str, access_token: str, drive_id: str,
 
     for attempt in range(max_retries):
         try:
-            response = requests.put(upload_url, headers=headers, data=csv_content('utf-8'))
+            response = requests.put(upload_url, headers=headers, data=csv_content.encode('utf-8'))
 
             if response.status_code in [200, 201]:
                 logger.info(f"✅ Successfully uploaded CSV to Sharepoint: {file_name}")

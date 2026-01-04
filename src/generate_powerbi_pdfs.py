@@ -24,7 +24,7 @@ def get_powerbi_access_token(tenant_id: str, client_id: str, client_secret: str)
         raise
 
 
-def export_report_to_pdf(workspace_id: str, report_id: str, parameter_name: str, access_token: str, max_retries: int = 30, retry_interval: int = 10):
+def export_report_to_pdf(workspace_id: str, report_id: str, parameter_name: str, parameter_value: str, access_token: str, max_retries: int = 30, retry_interval: int = 10):
     try:
         base_url = "https://api.powerbi.com/v1.0/myorg" 
         export_url = f"{base_url}/groups/{workspace_id}/reports/{report_id}/ExportTo"
@@ -182,7 +182,7 @@ def generate_pdf_batch(values: list, workspace_id: str, report_id: str, paramete
         failed_items = retry_failed
         retry_attempt += 1  
 
-    success_count = len(pdf)
+    success_count = len(pdf_dict)
     failed_count = len(failed_items)
 
     logger.info("")
@@ -194,3 +194,5 @@ def generate_pdf_batch(values: list, workspace_id: str, report_id: str, paramete
     if failed_items:
         logger.info("Failed items: ", ",".join(failed_items))
     logger.info("=" * 60)
+    
+    return pdf_dict

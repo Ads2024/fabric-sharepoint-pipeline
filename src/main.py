@@ -191,7 +191,7 @@ def main():
 
         if args.report_type in ['employees', 'both']:
             logger.info("Fetching employee list...")
-            employee_list = get_employees_list(
+            employee_list = get_specialised_carers_list(                #TODO: change function name to more generic get_employee_list in query_fabric_lakehouse.py
                 env_vars['FABRIC_TENANT_ID'],
                 env_vars['FABRIC_CLIENT_ID'],
                 env_vars['FABRIC_CLIENT_SECRET'],
@@ -222,7 +222,7 @@ def main():
             env_vars['SHAREPOINT_CLIENT_SECRET']
         )
 
-        site_id, drive_id = get_sharepoint_site_and_drive_id(
+        site_id, drive_id = get_site_and_drive_id(
             sharepoint_access_token,
             env_vars['SHAREPOINT_SITE_URL'],
             env_vars['SHAREPOINT_SITE_PATH'],
@@ -252,7 +252,7 @@ def main():
 
             if not args.dry_run and areas_pdfs:
                 logger.info(f"Uploading {len(areas_pdfs)} area PDFs to SharePoint")
-                upload_pdfs_to_sharepoint(
+                upload_pdfs_batch(
                     areas_pdfs,
                     sharepoint_access_token,
                     site_id,
@@ -267,17 +267,17 @@ def main():
             log_content += f"Failed: {areas_failed_count}\n"
 
             if areas_failed_count > 0:
-                failed_areas = [area for area in areas_list if area not in areas_pdfs]
+                failed_areas = [area for area in area_list if area not in areas_pdfs]
                 log_content += "Failed Areas:\n" + "\n".join(f" - {area}" for area in failed_areas)
 
             if not args.dry_run:
                 log_filename = f"Logs_Areas_{datetime_str}.txt"
                 upload_text_content_to_sharepoint(
-                    log_content,
                     sharepoint_access_token,
                     drive_id,
                     config['sharepoint']['folders']['logs'],
-                    log_filename
+                    log_filename,
+                    log_content
                 )
 
             if args.report_type in ['employees', 'both'] and employee_list:
