@@ -9,7 +9,7 @@ from typing import Dict, List
 
 
 
-from query_fabric_lakehouse import get_areas_list, get_specialised_carers_list, get_salesforce_data
+from query_fabric_lakehouse import get_areas_list, get_employees_list, get_fabric_data
 from generate_powerbi_pdfs import (
     get_powerbi_access_token,
     generate_pdf_batch
@@ -28,14 +28,14 @@ from generate_sharepoint_links import(
     create_link_generation_log,
     upload_log_to_sharepoint
 )
-from send_notification import send_bcp_notification
+from send_notification import send_notification
 
 
 def setup_logging(config_path: str = None):
     log_file = 'fabric_pdf_generator.log'
     if config_path:
         try:
-             with open(config_path, 'r') as f:
+             with open(config_path, 'r', encoding='utf-8') as f:
                 config = yaml.safe_load(f)
                 if 'logging' in config and 'file_path' in config['logging']:
                      log_file = config['logging']['file_path']
@@ -56,7 +56,7 @@ logger = setup_logging()
 
 def load_config(config_path: str):
     try:
-        with open(config_path, 'r') as f:
+        with open(config_path, 'r', encoding='utf-8') as f:
             config = yaml.safe_load(f)
         logger.info(f"Successfully loaded config from {config_path}")
         return config
@@ -96,7 +96,7 @@ def get_environment_variables():
         'SMTP_PASSWORD': os.getenv('SMTP_PASSWORD'),
     }
 
-    missing = [var for var in required_vars.values() if var is None]
+    missing = [name for name, val in required_vars.items() if val is None]
     if missing:
         raise ValueError(f"Missing required environment variables: {', '.join(missing)}")
 
@@ -121,7 +121,7 @@ def main():
     parser.add_argument(
         '--config',
         type = str,
-        default =  ' config/config.yaml',
+        default = 'config/config.yaml',
         help= 'Path to config file'
     )
     parser.add_argument(
@@ -394,7 +394,7 @@ def main():
                     except ValueError:
                         logger.error(f"Invalid SMTP port: {env_vars['SMTP_PORT']}")
 
-                send_bcp_notification(
+                send_notification(
                     env_vars['SHAREPOINT_TENANT_ID'],
                     env_vars['SHAREPOINT_CLIENT_ID'],
                     env_vars['SHAREPOINT_CLIENT_SECRET'],

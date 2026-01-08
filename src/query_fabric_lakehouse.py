@@ -96,13 +96,11 @@ def get_areas_list(tenant_id: str, client_id: str, client_secret: str, sql_endpo
         if conn:
             conn.close()
 
-def get_specialised_carers_list(tenant_id: str, client_id: str, client_secret: str, sql_endpoint: str, database: str, query: str):
-    # TODO: This function name is specific to the current use case, but it should be more generic
-    # will use this function for now
-    return get_salesforce_data(tenant_id, client_id, client_secret, sql_endpoint, database, query)
+def get_employees_list(tenant_id: str, client_id: str, client_secret: str, sql_endpoint: str, database: str, query: str):
+    return get_fabric_data(tenant_id, client_id, client_secret, sql_endpoint, database, query)
 
 
-def get_salesforce_data(tenant_id: str, client_id: str, client_secret: str, sql_endpoint: str, database: str, query: str):
+def get_fabric_data(tenant_id: str, client_id: str, client_secret: str, sql_endpoint: str, database: str, query: str):
     conn = None
     try:
         conn = get_fabric_connection(tenant_id, client_id, client_secret, sql_endpoint, database)
