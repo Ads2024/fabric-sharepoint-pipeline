@@ -29,7 +29,7 @@ def get_graph_access_token(tenant_id: str, client_id: str, client_secret: str):
         raise   
 
 
-def create_email_html_body(date_str: str, areas_total: int, areas_success: int, areas_failed: int, employees_total: int, employees_success: int, employees_failed: int):
+def create_email_html_body(date_str: str, functions_total: int, functions_success: int, functions_failed: int, employees_total: int, employees_success: int, employees_failed: int):
     html_body = f"""
     <html>
     <head>
@@ -85,20 +85,20 @@ def create_email_html_body(date_str: str, areas_total: int, areas_success: int, 
             <p>Today is <strong>{date_str}</strong>.</p>
 
             <div class="section">
-                <h3>📊 Areas</h3>
+                <h3>📊 Functions</h3>
                 <div class="stats">
     """
 
-    if areas_failed == 0:
+    if functions_failed == 0:
         html_body += f"""
-                    <span class="success">✅ {areas_success} records</span> have been created successfully.<br>
-                    Total count of areas: <strong>{areas_total}</strong>
+                    <span class="success">✅ {functions_success} records</span> have been created successfully.<br>
+                    Total count of functions: <strong>{functions_total}</strong>
         """
     else:
         html_body += f"""
-                    <span class="success">✅ {areas_success} records</span> have been created successfully.<br>
-                    <span class="failure">❌ {areas_failed} failed</span> to be created.<br>
-                    Total count of areas: <strong>{areas_total}</strong>
+                    <span class="success">✅ {functions_success} records</span> have been created successfully.<br>
+                    <span class="failure">❌ {functions_failed} failed</span> to be created.<br>
+                    Total count of functions: <strong>{functions_total}</strong>
         """
 
     html_body += """
@@ -213,15 +213,15 @@ def send_email_via_graph(access_token: str, sender_email: str, receipient_emails
         return False    
 
 
-def send_notification(tenant_id: str, client_id: str, client_secret: str, sender_email: str, receipient_emails: List[str], date_str: str, areas_total: int, areas_success: int, areas_failed: int, employees_total: int, employees_success: int, employees_failed: int, cc_emails: Optional[List[str]] = None, smtp_server: Optional[str] = None, smtp_port: Optional[int] = None, smtp_password: Optional[str] = None, use_smtp_fallback: bool = True):
+def send_notification(tenant_id: str, client_id: str, client_secret: str, sender_email: str, receipient_emails: List[str], date_str: str, functions_total: int, functions_success: int, functions_failed: int, employees_total: int, employees_success: int, employees_failed: int, cc_emails: Optional[List[str]] = None, smtp_server: Optional[str] = None, smtp_port: Optional[int] = None, smtp_password: Optional[str] = None, use_smtp_fallback: bool = True):
 
     subject = f"PDF Generation Report - {date_str}"
 
     html_body = create_email_html_body(
         date_str,
-        areas_total,
-        areas_success,
-        areas_failed,
+        functions_total,
+        functions_success,
+        functions_failed,
         employees_total,
         employees_success,
         employees_failed

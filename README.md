@@ -66,7 +66,7 @@ python src/main.py --config config/config.yaml
 
 **Options**:
 -   `--dry-run`: Simulate execution without external calls.
--   `--report-type`: Choose report types defined in your config (e.g. `areas`, `employees`).
+-   `--report-type`: Choose report types defined in your config (e.g. `functions`, `employees`).
 
 ## CI/CD Configuration (GitHub Actions)
 The repository includes a GitHub Actions workflow (`.github/workflows/ci.yml`) that runs:

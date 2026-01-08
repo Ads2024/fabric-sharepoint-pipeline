@@ -9,7 +9,7 @@ from typing import Dict, List
 
 
 
-from query_fabric_lakehouse import get_areas_list, get_employees_list, get_fabric_data
+from query_fabric_lakehouse import get_functions_list, get_employees_list, get_fabric_data
 from generate_powerbi_pdfs import (
     get_powerbi_access_token,
     generate_pdf_batch
@@ -127,7 +127,7 @@ def main():
     parser.add_argument(
         '--report-type',
         type = str,
-        choices = ['areas', 'employees', 'both'],
+        choices = ['functions', 'employees', 'both'],
         default = 'both',
         help = 'Type of report to generate'
     )
@@ -165,9 +165,9 @@ def main():
         date_str, datetime_str, timezone_str = get_current_datetime(config.get('timezone', 'Australia/Sydney'))
         logger.info(f"Current date and time: {datetime_str}")
 
-        area_list = []
-        area_success_count = 0
-        area_failure_count = 0
+        function_list = []
+        function_success_count = 0
+        function_failure_count = 0
 
         employee_list = []
         employee_success_count = 0
@@ -177,17 +177,17 @@ def main():
         logger.info("STEP 1 : Querying Fabric Lakehouse")
         logger.info("="*60)
 
-        if args.report_type in ['areas', 'both']:
-            logger.info("Fetching area list...")
-            area_list = get_areas_list(
+        if args.report_type in ['functions', 'both']:
+            logger.info("Fetching function list...")
+            function_list = get_functions_list(
                 env_vars['FABRIC_TENANT_ID'],
                 env_vars['FABRIC_CLIENT_ID'],
                 env_vars['FABRIC_CLIENT_SECRET'],
                 env_vars['FABRIC_SQL_ENDPOINT'],
                 env_vars['FABRIC_DATABASE_NAME'],
-                config['queries']['areas']
+                config['queries']['functions']
             )
-            logger.info(f"Fetched {len(area_list)} areas")
+            logger.info(f"Fetched {len(function_list)} functions")
 
         if args.report_type in ['employees', 'both']:
             logger.info("Fetching employee list...")
@@ -229,49 +229,49 @@ def main():
             env_vars['SHAREPOINT_DRIVE_NAME']
         )
 
-        if args.report_type in ['areas', 'both'] and area_list:
+        if args.report_type in ['functions', 'both'] and function_list:
             logger.info("\n" + "="*60)
-            logger.info("STEP 4 : Generating and uploading PDFs for areas")
+            logger.info("STEP 4 : Generating and uploading PDFs for functions")
             logger.info("="*60)
 
-            batch_size_areas =  args.batch_size if args.batch_size else config['processing']['batch_size_areas']
+            batch_size_functions =  args.batch_size if args.batch_size else config['processing']['batch_size_functions']
 
-            areas_pdfs = generate_pdf_batch(
-                area_list,
+            functions_pdfs = generate_pdf_batch(
+                function_list,
                 env_vars['POWERBI_WORKSPACE_ID'],
                 env_vars['POWERBI_REPORT_ID'],
                 powerbi_access_token,
-                batch_size_areas,
+                batch_size_functions,
                 config['processing']['max_retries'] if 'max_retries' in config['processing'] else 3,
                 config['powerbi']['export']['retry_interval_seconds'],
                 config['processing']['retry_delay_seconds']
             )
 
-            areas_success_count = len(areas_pdfs)
-            areas_failed_count = len(area_list) - areas_success_count
+            functions_success_count = len(functions_pdfs)
+            functions_failed_count = len(function_list) - functions_success_count
 
-            if not args.dry_run and areas_pdfs:
-                logger.info(f"Uploading {len(areas_pdfs)} area PDFs to SharePoint")
+            if not args.dry_run and functions_pdfs:
+                logger.info(f"Uploading {len(functions_pdfs)} function PDFs to SharePoint")
                 upload_pdfs_batch(
-                    areas_pdfs,
+                    functions_pdfs,
                     sharepoint_access_token,
                     site_id,
                     drive_id,
-                    config['sharepoint']['folders']['areas']
+                    config['sharepoint']['folders']['functions']
                 )
-                logger.info(f"Successfully uploaded {len(areas_pdfs)} area PDFs to SharePoint, Failed: {areas_failed_count}")
+                logger.info(f"Successfully uploaded {len(functions_pdfs)} function PDFs to SharePoint, Failed: {functions_failed_count}")
 
-            log_content = f"Areas PDFs generated log\ndate: {datetime_str}\n\n"
-            log_content += f"Total: {len(area_list)}\n"
-            log_content += f"Success: {areas_success_count}\n"
-            log_content += f"Failed: {areas_failed_count}\n"
+            log_content = f"Functions PDFs generated log\ndate: {datetime_str}\n\n"
+            log_content += f"Total: {len(function_list)}\n"
+            log_content += f"Success: {functions_success_count}\n"
+            log_content += f"Failed: {functions_failed_count}\n"
 
-            if areas_failed_count > 0:
-                failed_areas = [area for area in area_list if area not in areas_pdfs]
-                log_content += "Failed Areas:\n" + "\n".join(f" - {area}" for area in failed_areas)
+            if functions_failed_count > 0:
+                failed_functions = [func for func in function_list if func not in functions_pdfs]
+                log_content += "Failed Functions:\n" + "\n".join(f" - {func}" for func in failed_functions)
 
             if not args.dry_run:
-                log_filename = f"Logs_Areas_{datetime_str}.txt"
+                log_filename = f"Logs_Functions_{datetime_str}.txt"
                 upload_text_content_to_sharepoint(
                     sharepoint_access_token,
                     drive_id,
@@ -401,9 +401,9 @@ def main():
                     env_vars['EMAIL_SENDER'],
                     recipeints,
                     date_str,
-                    len(area_list),
-                    area_success_count,
-                    areas_failed_count,
+                    len(function_list),
+                    functions_success_count,
+                    functions_failed_count,
                     len(employee_list),
                     employees_success_count,
                     employees_failed_count,
@@ -417,7 +417,7 @@ def main():
             logger.info("STEP 8 : Completed")
             logger.info("="*60)
             logger.info(f"Summary") 
-            logger.info(f"Areas: {area_success_count} successful, {areas_failed_count} failed")
+            logger.info(f"Functions: {functions_success_count} successful, {functions_failed_count} failed")
             logger.info(f"Employees: {employees_success_count} successful, {employees_failed_count} failed")
 
             return 0

@@ -74,22 +74,22 @@ def execute_query(connection: pyodbc.Connection, query:str):
 
 
 
-def get_areas_list(tenant_id: str, client_id: str, client_secret: str, sql_endpoint: str, database: str, query: str):
+def get_functions_list(tenant_id: str, client_id: str, client_secret: str, sql_endpoint: str, database: str, query: str):
     conn = None
     try:
         conn = get_fabric_connection(tenant_id, client_id, client_secret, sql_endpoint, database)
         results = execute_query(conn, query)
         
-        areas = []
+        functions = []
         if results:
             first_key = list(results[0].keys())[0]
-            areas = [row[first_key] for row in results if row.get(first_key)]
+            functions = [row[first_key] for row in results if row.get(first_key)]
             
-        logger.info(f"Retrieved {len(areas)} areas")
-        return areas
+        logger.info(f"Retrieved {len(functions)} functions")
+        return functions
     
     except Exception as e:
-        logger.error(f"Failed to get areas list: {e}")
+        logger.error(f"Failed to get functions list: {e}")
         raise
 
     finally:
